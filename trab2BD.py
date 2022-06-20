@@ -2,6 +2,9 @@ import sys
 import re
 import psycopg2
 
+
+commit  = []
+trAberta = []
 def conexao_BD():
     #função que faz a conexão com o banco de dados
     try:
@@ -23,6 +26,7 @@ def main():
     file = open(arquivo, "r")
 
     arquivo_linhas = [] 
+    endCKPT = []
     for i in file:
         arquivo_linhas.append(i)
     
@@ -43,7 +47,20 @@ def main():
 
     if endC == False:
         print("Checkpoint não foi finalizado")
+        linhaCKPT = arquivo_linhas
+        redo(arquivo_linhas, linhaCKPT, endCKPT,startC)
+    else:
+        linhaCKPT = arquivo_linhas[startC::]
+        redo(arquivo_linhas, linhaCKPT, endC, startC)
+
     
+    for i in trAberta:
+        if i in commit:
+            print('Transação', i, 'fez REDO')
+        else:
+            print('Transação', i,  'não fez REDO')
+
+    imprimir_variaveis()
     
 
 #função para inserir as tuplas na tabela
@@ -108,13 +125,25 @@ def busca_ckpt(arquivo_linhas):
 
 
 
-def redo(arquivo_linhas, linhaCKPT, endCKPT):
-
-    for i in range(len(linhaCKPT),-1,0,-1):
+def redo(arquivo_linhas, linhaCKPT, endCKPT, StartC = 0):
+    
+# vai percorrer ao contrário as linhas que tem CKPT verificando o que tem commit 
+    for i in range(len(linhaCKPT)-1,0,-1):
+        # se tem commit adiciona na lista de commit
         if 'commit' in linhaCKPT[i]:
             commit.append(linhaCKPT[i].split()[1])
+        # se encontra start então adiciona na lista de transições abertas
         if 'start' in linhaCKPT[i]:
             trAberta.append(linhaCKPT[i].split()[1])
+    
+    # se o endCKPT é true quer dizer que tem transação em aberto 
+    if endCKPT == True:
+        res = re.findall(r'\(.*?\)', arquivo_linhas[StartC])
+        res = "".join([n for n in res[0] if n != '(' and n !=')'])
+        print(res)
+        [trAberta.append(n) for n in res.split(',')]
+    
+    commit.reverse()
 
 
 main()
