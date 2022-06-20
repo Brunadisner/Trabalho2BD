@@ -22,25 +22,28 @@ import re
 #   cursor.close()
 #   conn.close()
 
-arquivo = sys.argv[1]
-try:
+
+
+
+def main():
+    arquivo = sys.argv[1]
     file = open(arquivo, "r")
-except:
-    print(
-        f"Algo deu errado D:\nArquivo '{arquivo}' não encontrado ou inválido")
-    exit(0)
 
-vetor = [] 
-vetor2 = []
-cabecalho = [] 
-for caracter in file:
-    vetor.append(caracter.split())
-pattern = r"<[a-zA-Z].+"
-for string in vetor:
-      for caracter in string:
-            vetor2 = re.findall(pattern,caracter)
-      print(vetor2)
+    arquivo_linhas = [] 
+    for i in file:
+        arquivo_linhas.append(i)
+    
+    for string in vetor:
+        for caracter in string:
+                vetor2 = re.findall(pattern,caracter)
+        print(vetor2)
 
+def limpar(arquivo_linhas):
+    for linha in range(len(arquivo_linhas)):
+        linha[arquivo_linhas] = re.sub('\n','',arquivo_linhas[linha])
+        linha[arquivo_linhas] = re.sub('<','')
+        linha[arquivo_linhas] = re.sub('>','')
 
-file.close()
+    return arquivo_linhas
+
 
