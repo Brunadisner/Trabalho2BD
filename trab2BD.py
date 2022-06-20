@@ -34,7 +34,6 @@ def main():
     arquivo_linhas = limpar(arquivo_linhas)
 
     create_db()
-
     linha = 0
     for i in range(len(arquivo_linhas)):
         if arquivo_linhas[i] == '':
@@ -42,12 +41,15 @@ def main():
             inserir_banco(arquivo_linhas, i)
             break
     
+    arquivo_linhas = arquivo_linhas[linha+1::]
+    
     
 
 
 def create_db():
     cur = con.cursor()
-    # cur.execute("CREATE TABLE tabela (id int not null, A INTEGER, B INTEGER);")
+    cur.execute("drop table tabela")
+    cur.execute("CREATE TABLE tabela (id int not null, A INTEGER, B INTEGER, primary key(id));")
     con.commit()
     print("Tabela criada \n")
     
@@ -68,9 +70,9 @@ def inserir_banco(arquivo_linhas,i):
     cur.execute(sql)
     inseriu = arquivo_linhas[0:i]
 
-    for arquivo_linhas in inseriu:
-        arquivo_linhas = re.sub('=', ',', arquivo_linhas)
-        quebra = arquivo_linhas.split(',')
+    for linha in inseriu:
+        linha = re.sub('=', ',', linha)
+        quebra = linha.split(',')
         sql = " select * from tabela where id = {}".format(quebra[1])
         cur.execute(sql)
         r = cur.fetchall()
@@ -91,7 +93,17 @@ def imprimir_variaveis():
     cur.execute(sql)
     r = cur.fetchall()
     print(r)
-    
+
+def busca_ckpt(arquivo_linhas):
+    start = 0
+    end  = False
+
+    for i, linha in enumerate(arquivo_linhas):
+        if 'Start CKPT' in linha:
+            start = i
+        if 'End CKPT' in linha:
+            end = True
+    return start, end
 
 
 main()
