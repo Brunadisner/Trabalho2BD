@@ -17,15 +17,8 @@ def conexao_BD():
 
 con = conexao_BD()
 
-# #função para inserir as tuplas na tabela
-# def inserir_db(sql):
-#   cursor.execute("DROP TABLE IF EXISTS inventory;")
-#   cursor.execute("CREATE TABLE tabela1 (id INTEGER, A INTEGER, B INTEGER);")
-#   cursor.execute("INSERT INTO dados VALUES(1,100,20);")
-#   cursor.execute("INSERT INTO dados VALUES(2,20,30);")
-#   conn.commit()
-#   cursor.close()
-#   conn.close()
+#função para inserir as tuplas na tabela
+
 
 
 
@@ -40,15 +33,24 @@ def main():
     
     arquivo_linhas = limpar(arquivo_linhas)
 
+    create_db()
+
+    linha = 0
     for i in range(len(arquivo_linhas)):
         if arquivo_linhas[i] == '':
+            linha = i
             inserir_banco(arquivo_linhas, i)
             break
     
     
 
 
-
+def create_db():
+    cur = con.cursor()
+    # cur.execute("CREATE TABLE tabela (id int not null, A INTEGER, B INTEGER);")
+    con.commit()
+    print("Tabela criada \n")
+    
 
 # limpando as linhas para iniciar a leitura do arquivo
 def limpar(arquivo_linhas):
@@ -62,20 +64,21 @@ def limpar(arquivo_linhas):
 
 def inserir_banco(arquivo_linhas,i):
     cur = con.cursor()
+    sql = "truncate table tabela"
     cur.execute(sql)
     inseriu = arquivo_linhas[0:i]
 
     for arquivo_linhas in inseriu:
         arquivo_linhas = re.sub('=', ',', arquivo_linhas)
         quebra = arquivo_linhas.split(',')
-        sql = " select * from tabela1 where id = {}".format(quebra[1])
+        sql = " select * from tabela where id = {}".format(quebra[1])
         cur.execute(sql)
         r = cur.fetchall()
         if r:
-            sql = "update tabela1 set {} = {} where id {}".format(quebra[0], quebra[2], quebra[1])
+            sql = "update tabela set {} = {} where id {}".format(quebra[0], quebra[2], quebra[1])
             cur.execute(sql)
         else:
-            sql = "insert into tabela1 (id, {}) values ".format(quebra[0], quebra[1], quebra[2])
+            sql = "insert into tabela (id, {}) values ({}, {})".format(quebra[0], quebra[1], quebra[2])
             cur.execute(sql)
 
     con.commit()
