@@ -17,11 +17,6 @@ def conexao_BD():
 
 con = conexao_BD()
 
-#função para inserir as tuplas na tabela
-
-
-
-
 
 def main():
     arquivo = sys.argv[1]
@@ -42,14 +37,20 @@ def main():
             break
     
     arquivo_linhas = arquivo_linhas[linha+1::]
+    #chama a função para buscar o endCKPT e StartCKPT
+
+    startC, endC = busca_ckpt(arquivo_linhas)
+
+    if endC == False:
+        print("Checkpoint não foi finalizado")
     
     
 
-
+#função para inserir as tuplas na tabela
 def create_db():
     cur = con.cursor()
     cur.execute("drop table tabela")
-    cur.execute("CREATE TABLE tabela (id int not null, A INTEGER, B INTEGER, primary key(id));")
+    cur.execute("CREATE TABLE tabela (id int not null, A int, B int, primary key(id))")
     con.commit()
     print("Tabela criada \n")
     
@@ -104,6 +105,16 @@ def busca_ckpt(arquivo_linhas):
         if 'End CKPT' in linha:
             end = True
     return start, end
+
+
+
+def redo(arquivo_linhas, linhaCKPT, endCKPT):
+
+    for i in range(len(linhaCKPT),-1,0,-1):
+        if 'commit' in linhaCKPT[i]:
+            commit.append(linhaCKPT[i].split()[1])
+        if 'start' in linhaCKPT[i]:
+            trAberta.append(linhaCKPT[i].split()[1])
 
 
 main()
