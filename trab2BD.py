@@ -1,24 +1,25 @@
 import sys
 import re
 import psycopg2
+from beautifultable import BeautifulTable
 
 
 commit  = []
 trAberta = []
-def conexao_BD():
-    #função que faz a conexão com o banco de dados
-    try:
-        conexao = psycopg2.connect(database= 'trabalho',
-                                    host = 'localhost',
-                                    user = 'postgres',
-                                    password = 'root')
-        print("Conectou!")
-        return conexao     
-    except psycopg2.DatabaseError as e:
-        print("Erro ao conectar o banco:", e)
-        return None
+# def conexao_BD():
+#     #função que faz a conexão com o banco de dados
+#     try:
+#         conexao = psycopg2.connect(database= 'teste',
+#                                     host = 'localhost',
+#                                     user = 'postgres',
+#                                     password = 'root')
+#         print("Conectou")
+#         return conexao     
+#     except psycopg2.DatabaseError as e:
+#         print("Erro ao conectar o banco:", e)
+#         return None
 
-con = conexao_BD()
+# con = conexao_BD()
 
 
 def main():
@@ -32,7 +33,7 @@ def main():
     
     arquivo_linhas = limpar(arquivo_linhas)
 
-    create_db()
+    # create_db()
     linha = 0
     for i in range(len(arquivo_linhas)):
         if arquivo_linhas[i] == '':
@@ -63,14 +64,6 @@ def main():
     imprimir_variaveis()
     
 
-#função para inserir as tuplas na tabela
-def create_db():
-    cur = con.cursor()
-    cur.execute("drop table tabela")
-    cur.execute("CREATE TABLE tabela (id int not null, A int, B int, primary key(id))")
-    con.commit()
-    print("Tabela criada \n")
-    
 
 # limpando as linhas para iniciar a leitura do arquivo
 def limpar(arquivo_linhas):
@@ -81,6 +74,13 @@ def limpar(arquivo_linhas):
 
     return arquivo_linhas
 
+#função para inserir as tuplas na tabela
+def create_db():
+    cur = con.cursor()
+    cur.execute("drop table tabela")
+    cur.execute("CREATE TABLE tabela (id int not null, A int, B int, primary key(id))")
+    con.commit()
+    print("Tabela criada \n")
 
 def inserir_banco(arquivo_linhas,i):
     cur = con.cursor()
@@ -93,8 +93,8 @@ def inserir_banco(arquivo_linhas,i):
         quebra = linha.split(',')
         sql = " select * from tabela where id = {}".format(quebra[1])
         cur.execute(sql)
-        r = cur.fetchall()
-        if r:
+        t = cur.fetchall()
+        if t:
             sql = "update tabela set {} = {} where id {}".format(quebra[0], quebra[2], quebra[1])
             cur.execute(sql)
         else:
@@ -109,8 +109,9 @@ def imprimir_variaveis():
     cur  = con.cursor()
     sql = "select * from tabela order by id"
     cur.execute(sql)
-    r = cur.fetchall()
-    print(r)
+    t = cur.fetchall()
+    print(t)
+
 
 def busca_ckpt(arquivo_linhas):
     start = 0
@@ -145,6 +146,20 @@ def redo(arquivo_linhas, linhaCKPT, endCKPT, StartC = 0):
     
     commit.reverse()
 
+def verificar_valores(arquivo_linhas, i):
+    for linha in arquivo_linhas:
+        if i in linha and 'start' not in linha and 'commit' not in linha and 'CKPT' not in linha:
+             quebra = linha.split(',')
+             sql = " select * from tabela where id = {}".format(quebra[1])
+             cur.execute(sql)
+             t = cur.fetchall()
+             if t:
+                sql = "update tabela set {} = {} where id {}".format(quebra[0], quebra[2], quebra[1])
+                cur.execute(sql)
+             else:
+                sql = "insert into tabela (id, {}) values ({}, {})".format(quebra[0], quebra[1], quebra[2])
+                cur.execute(sql)
+                
 
 main()
 
