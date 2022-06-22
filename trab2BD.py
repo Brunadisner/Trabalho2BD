@@ -2,7 +2,22 @@ import sys
 import re
 import psycopg2
 
-
+class linha:
+    def init(self):
+        self.id = id;
+        self.colunaA = '';
+        self.colunaB = '';
+    
+    def setId(self, id):
+        self.id = id;
+    
+    def setColunaA(self, colunaA):
+        self.colunaA = colunaB;
+    
+    def setColunaB(self, colunaB):
+        self.colunaB = colunaB;
+    
+    
 commit  = []
 trAberta = []
 def conexao_BD():
@@ -90,18 +105,21 @@ def inserir_banco(arquivo_linhas,i):
     sql = "truncate table tabela"
     cur.execute(sql)
     inseriu = arquivo_linhas[0:i]
+    separ = []
     for linha in inseriu:
         linha = re.sub('=', ',', linha)
         separa = linha.split(',')
         col = separa[0]
         id = separa[1]
-        guarda = id
     
-    if guarda == id:
-        if col == 'A':
-            print(separa[2])
-        elif col == 'B':
-            print(separa[2])
+        
+
+
+    # if guarda == id:
+    #     if col == 'A':
+    #         print(separa[2])
+    #     elif col == 'B':
+    #         print(separa[2])
     
     for linha in inseriu:
         if guarda == id:
