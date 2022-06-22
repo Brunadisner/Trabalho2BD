@@ -81,22 +81,27 @@ def create_db():
     con.commit()
     print("Tabela criada \n")
 
-def verifica_id(arquivo_linhas, i):
+# def verifica_id(arquivo_linhas, i):
+   
+        
+def inserir_banco(arquivo_linhas,i):
+    
+    cur = con.cursor()
+    sql = "truncate table tabela"
+    cur.execute(sql)
+    inseriu = arquivo_linhas[0:i]
     for linha in inseriu:
         linha = re.sub('=', ',', linha)
         separa = linha.split(',')
         col = separa[0]
         id = separa[1]
         guarda = id
+        for id in linha:
+            if guarda == id:
+                print('é igual',id)
+
     
-    if guarda == id:
-        
-def inserir_linha(id,)
-def inserir_banco(arquivo_linhas,i):
-    cur = con.cursor()
-    sql = "truncate table tabela"
-    cur.execute(sql)
-    inseriu = arquivo_linhas[0:i]
+    
     
 
     for linha in inseriu:
