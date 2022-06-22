@@ -96,12 +96,17 @@ def inserir_banco(arquivo_linhas,i):
         col = separa[0]
         id = separa[1]
         guarda = id
-        for id in linha:
-            if guarda == id:
-                print('é igual',id)
-
     
+    if guarda == id:
+        if col == 'A':
+            print(separa[2])
+        elif col == 'B':
+            print(separa[2])
     
+    for linha in inseriu:
+        if guarda == id:
+            valorA = separa[3]
+            print(valorA)
     
 
     for linha in inseriu:
