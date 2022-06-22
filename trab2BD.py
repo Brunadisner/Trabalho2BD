@@ -1,25 +1,24 @@
 import sys
 import re
 import psycopg2
-from beautifultable import BeautifulTable
 
 
 commit  = []
 trAberta = []
-# def conexao_BD():
-#     #função que faz a conexão com o banco de dados
-#     try:
-#         conexao = psycopg2.connect(database= 'teste',
-#                                     host = 'localhost',
-#                                     user = 'postgres',
-#                                     password = 'root')
-#         print("Conectou")
-#         return conexao     
-#     except psycopg2.DatabaseError as e:
-#         print("Erro ao conectar o banco:", e)
-#         return None
+def conexao_BD():
+    #função que faz a conexão com o banco de dados
+    try:
+        conexao = psycopg2.connect(database= 'teste',
+                                    host = 'localhost',
+                                    user = 'postgres',
+                                    password = 'root')
+        print("Conectou")
+        return conexao     
+    except psycopg2.DatabaseError as e:
+        print("Erro ao conectar o banco:", e)
+        return None
 
-# con = conexao_BD()
+con = conexao_BD()
 
 
 def main():
@@ -33,7 +32,7 @@ def main():
     
     arquivo_linhas = limpar(arquivo_linhas)
 
-    # create_db()
+    create_db()
     linha = 0
     for i in range(len(arquivo_linhas)):
         if arquivo_linhas[i] == '':
@@ -49,7 +48,7 @@ def main():
     if endC == False:
         print("Checkpoint não foi finalizado")
         linhaCKPT = arquivo_linhas
-        redo(arquivo_linhas, linhaCKPT, endCKPT,startC)
+        redo(arquivo_linhas, linhaCKPT, endC,startC)
     else:
         linhaCKPT = arquivo_linhas[startC::]
         redo(arquivo_linhas, linhaCKPT, endC, startC)
@@ -78,22 +77,35 @@ def limpar(arquivo_linhas):
 def create_db():
     cur = con.cursor()
     cur.execute("drop table tabela")
-    cur.execute("CREATE TABLE tabela (id int not null, A int, B int, primary key(id))")
+    cur.execute("CREATE TABLE IF NOT EXISTS tabela (id int not null, A int, B int)")
     con.commit()
     print("Tabela criada \n")
 
+def verifica_id(arquivo_linhas, i):
+    for linha in inseriu:
+        linha = re.sub('=', ',', linha)
+        separa = linha.split(',')
+        col = separa[0]
+        id = separa[1]
+        guarda = id
+    
+    if guarda == id:
+        
+def inserir_linha(id,)
 def inserir_banco(arquivo_linhas,i):
     cur = con.cursor()
     sql = "truncate table tabela"
     cur.execute(sql)
     inseriu = arquivo_linhas[0:i]
+    
 
     for linha in inseriu:
-        linha = re.sub('=', ',', linha)
+       
         quebra = linha.split(',')
         sql = " select * from tabela where id = {}".format(quebra[1])
         cur.execute(sql)
         t = cur.fetchall()
+       
         if t:
             sql = "update tabela set {} = {} where id {}".format(quebra[0], quebra[2], quebra[1])
             cur.execute(sql)
@@ -145,20 +157,28 @@ def redo(arquivo_linhas, linhaCKPT, endCKPT, StartC = 0):
         [trAberta.append(n) for n in res.split(',')]
     
     commit.reverse()
+    # for x in commit:
+    #     verificar_valores(arquivo_linhas, x)
 
-def verificar_valores(arquivo_linhas, i):
-    for linha in arquivo_linhas:
-        if i in linha and 'start' not in linha and 'commit' not in linha and 'CKPT' not in linha:
-             quebra = linha.split(',')
-             sql = " select * from tabela where id = {}".format(quebra[1])
-             cur.execute(sql)
-             t = cur.fetchall()
-             if t:
-                sql = "update tabela set {} = {} where id {}".format(quebra[0], quebra[2], quebra[1])
-                cur.execute(sql)
-             else:
-                sql = "insert into tabela (id, {}) values ({}, {})".format(quebra[0], quebra[1], quebra[2])
-                cur.execute(sql)
+# def verificar_valores(arquivo_linhas, i):
+#     for linha in arquivo_linhas:
+#         if i in linha and 'start' not in linha and 'commit' not in linha and 'CKPT' not in linha:
+#              separa = linha.split(',')
+#              id = separa[1]
+#              coluna = separa[2]
+#              valor = separa[3]
+#              cur = con.cursor()
+#              sql = "select * from tabela where id = {}".format(id)
+#              cur.execute(sql)
+#              t = cur.fetchall()
+#              x = t[0][0]
+#              if x != valor:
+#                 sql = "update tabela set {} = {} where id {}".format(coluna, valor, id)
+#                 cur.execute(sql)
+#                 sql = "Coluna {}, id {} atualizado para {}". format(coluna, id, valor)
+#                 print(sql)
+#                 con.commit()
+             
                 
 
 main()
