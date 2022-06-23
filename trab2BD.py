@@ -42,8 +42,8 @@ def main():
             break
     
     arquivo_linhas = arquivo_linhas[linha+1::]
+    # print(arquivo_linhas)
     #chama a função para buscar o endCKPT e StartCKPT
-
     startC, endC = busca_ckpt(arquivo_linhas)
 
     if endC == False:
@@ -51,7 +51,7 @@ def main():
         linhaCKPT = arquivo_linhas
         redo(arquivo_linhas, linhaCKPT, endC,startC)
     else:
-        linhaCKPT = arquivo_linhas[startC::]
+        linhaCKPT = arquivo_linhas[startC::]#passa as linhas a partir do StartCKPT
         redo(arquivo_linhas, linhaCKPT, endC, startC)
 
     
@@ -94,7 +94,7 @@ def inserir_banco(arquivo_linhas,i):
         cur.execute(sql)
         t = cur.fetchall()
         if t:
-            sql = "update tabela set {} = {} where id {}".format(quebra[0], quebra[2], quebra[1])
+            sql = "update tabela set {} = {} where id =  {}".format(quebra[0], quebra[2], quebra[1])
             cur.execute(sql)
         else:
             sql = "insert into tabela (id, {}) values ({}, {})".format(quebra[0], quebra[1], quebra[2])
@@ -132,19 +132,22 @@ def redo(arquivo_linhas, linhaCKPT, endCKPT, StartC = 0):
     for i in range(len(linhaCKPT)-1,0,-1):
         # se tem commit adiciona na lista de commit
         if 'commit' in linhaCKPT[i]:
-            commit.append(linhaCKPT[i].split()[1])
+            commit.append(linhaCKPT[i].split()[1]) #pega só a transação
+            # print(commit)
         # se encontra start então adiciona na lista de transições abertas
         if 'start' in linhaCKPT[i]:
-            trAberta.append(linhaCKPT[i].split()[1])
+            trAberta.append(linhaCKPT[i].split()[1]) #pega só a transação
     
     # se o endCKPT é true quer dizer que tem transação em aberto 
     if endCKPT == True:
-        res = re.findall(r'\(.*?\)', arquivo_linhas[StartC])
-        res = "".join([n for n in res[0] if n != '(' and n !=')'])
+        res = re.findall(r'\(.*?\)', arquivo_linhas[StartC])#pega as transações que estão dentro do startCKPT
+        # print(res)
+        res = "".join([n for n in res[0] if n != '(' and n !=')']) #concatena as transações 
         print(res)
         [trAberta.append(n) for n in res.split(',')]
     
-    commit.reverse()
+    commit.reverse()# inverte a lista  - ordem inversa
+  
 
     for x in commit:
         verificar_valores(arquivo_linhas,x)
@@ -168,6 +171,5 @@ def verificar_valores(arquivo_linhas, x):
                 print(sql)
                 con.commit()
              
-                
 
 main()
