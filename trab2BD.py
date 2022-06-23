@@ -33,7 +33,7 @@ def main():
     
     arquivo_linhas = limpar(arquivo_linhas)
 
-    # create_db()
+    create_db()
     linha = 0
     for i in range(len(arquivo_linhas)):
         if arquivo_linhas[i] == '':
@@ -77,8 +77,7 @@ def limpar(arquivo_linhas):
 #função para inserir as tuplas na tabela
 def create_db():
     cur = con.cursor()
-    cur.execute("drop table tabela")
-    cur.execute("CREATE TABLE tabela (id int not null, A int, B int, primary key(id))")
+    cur.execute("CREATE TABLE if not exists tabela (id int not null, A int, B int, primary key(id))")
     con.commit()
     print("Tabela criada \n")
 
