@@ -1,0 +1,1 @@
+psql -h localhost -d omdb -U tomdb -p 5432;
